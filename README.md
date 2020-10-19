@@ -163,43 +163,79 @@ REDIS_PORT=6379
 REDIS_PASSWORD=secret
 ```
 
-## Локальное развертывание (Docker)
+## Локальное развертывание (VirtualBox)
 
-В данном способе отсутствует поддержка PushServer. Если она вам нужна: используйте вариант с VirtualBox.
+### Настройка BitrixVM7
 
-### Unix систем
-1. Скопировать файл .env.example -> .env
-2. Предварительно установить пакеты: wget, zip, unzip
-3. Запустить команду в терминале: bash ./deploy_docker.sh
-4. Ввести пароль к архиву (core.zip, dump.zip)
-5. Ждем скачивания и распаковки
+Скачать образ [VirtualBox](https://repos.1c-bitrix.ru/vm/vm_bitrix24_crm_virtualbox.zip)
 
-### Windows
-Запустить через WSL ./deploy.sh или вручную скачать архивы.
+Импортировать
+
+![Import](https://i.ibb.co/88zHWMF/2020-10-10-19-39-16.png)
+
+Примонтировать раздел от корня репозитория
+
+![Shared folders](https://i.ibb.co/n63kmBD/2020-10-10-15-03-47.png)
+
+Пробрасываем порты Network -> Port Forwarding
+
+![Port Forwarding](https://i.ibb.co/3ddKZKc/2020-10-10-19-15-56.png)
+
+Запускаем. BitrixVM предложит вам установить пароль.
+
+После того как вы вошли в систему, прописать монтирование в `vim /root/.bashrc`
+в конец строки добавить `mount -t vboxsf -o uid=600,gid=600 home /home/bitrix/` (проверено на macos и windows 10). 
+
+Перезагружаемся и проверяем директорию `cd /home/bitrix && ll`. Если в ней есть файлы то монтирование прошло удачно. 
+
+### Настройка и установка битрикс
+1. Предварительно установить пакеты: `yum install wget zip unzip composer`
+2. Добавляем недостающие модули в php. Прописываем в терминале:
+3. `echo "extension=phar" > /etc/php.d/20-phar.ini` (для composer)
+4. `echo "extension=pdo" > /etc/php.d/20-pdo.ini` (для doctrine)
+5. `echo "extension=xmlwriter" > /etc/php.d/20-xmlwriter.ini` (для word/excel)
+6. `echo "extension=xmlreader" > /etc/php.d/30-xmlreader.ini` (для word/excel)
+7. `echo "extension=pdo_mysql" > /etc/php.d/30-pdo_mysql.ini` (для doctrine)
+8. В конфигах `vim /etc/php.d/bitrixenv.ini` удалить строку `mbstring.func_overload` (для symfony)
+9. В том же файле `vim /etc/php.d/bitrixenv.ini` поставить `sendmail_path = "cat >> ~/logs/mail.log"`
+10. Обновить node `npm cache clean -f && npm install -g n && n stable` и перезагрузить машину.
+11. Создать БД и пользователя `mysql -u root` -> `create database bitrix;` -> `CREATE USER 'bitrix'@'%' IDENTIFIED BY 'secret';` -> `GRANT ALL PRIVILEGES ON bitrix.* TO 'bitrix'@'%';` -> `FLUSH PRIVILEGES;` -> `exit;`
+12. Зайти в директорию `cd /home/bitrix/`
+13. Зайти от пользвателя bitrix `su bitrix` (это надо будет делать каждый раз перед запуском команд npm, composer, php bin/console, php bin/migrate)
+14. Скопировать файл `cp .env.example .env` (и прописать [настройки БД](#настройка-бд) `vim .env`)
+15. Запустить установщик `bash ./deploy_vbox.sh`. Он скачает дистрибутив bitrix24. В процессе установки будет запрашивать пароль (два раза: 1. core.zip; 2. dump.zip.) - для получения пароля писать мне в лс.
+16. Генерируем секретные ключи для symfony: устанавливаем `yum install php-sodium` и `php bin/console secrets:generate-keys`
+17. Скачать файл urlrewrite.php из development сервера и добавить в www/urlrewrite.php.
+
+Если при сборке assets выходит ошибка (последний этап deploy_vbox.sh): пересоберите node-sass `npm rebuild node-sass` и после заново запустите сборку `npm run build` либо `bash ./deploy_vbox.sh`
+
+###### push-server
+Последний этап настроить подключение к [push-server](https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=41&LESSON_ID=2033)
+
+Решение проблемы с падением (при первом подключении) push-server [тут](https://pocketadmin.tech/ru/bitrix24-%D0%BD%D0%B5-%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0%D0%B5%D1%82-push/)
 
 ### Настройка БД
 Прописать настройки подключения `www/bitrix/.settings.php` и `www/bitrix/php_interface/dbconn.php`
 ```
-'host' => '10.100.0.3',
+'host' => '127.0.0.1',
 'database' => 'bitrix',
 'login'    => 'bitrix',
 'password' => 'secret',
 ```
 ###### .env
 ```
-MYSQL_HOST=10.100.0.3
+MYSQL_HOST=127.0.0.1
 MYSQL_DATABASE=bitrix
 MYSQL_USER=bitrix
 MYSQL_PASSWORD=secret
 MYSQL_ROOT_PASSWORD=secret
 ```
-### Настройка Redis
-```
-REDIS_URL=redis://secret@10.100.0.7:6379
-REDIS_HOST=redis
-REDIS_PORT=6379
-REDIS_PASSWORD=secret
-```
+
+### Убираем шаблон 404
+Из-за отсутствия файлов в директории /upload/, битрикс подставляет шаблон "Карта Сайта" на каждый запрос, что увеличивает нагрузку.
+
+Решение: закомментить строку в файле `vim /etc/nginx/bx/conf/errors.conf` -> `#error_page 404 = @fallback;` и перезапустить nignx `systemctl restart nginx`
+
 
 ## Webpack Encore (Vue, Bootstrap, Widgets)
 

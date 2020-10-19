@@ -121,19 +121,36 @@ foreach ($qb->getQuery()->getResult() as $element) {
 Подробнее об этом режиме [тут](https://www.doctrine-project.org/projects/doctrine-orm/en/latest/reference/query-builder.html)
 
 ### Контроллеры
-Они доступны по адресу localhost/api/v2.
+Они доступны по адресу localhost/api/v2. Поумолчанию прописал в www/.htaccess `RewriteRule ^(api/v2|_profiler) /local/api/symfony/index.php [L]`
 
 Создание контроллеров происходит через `php bin/console make:controller`
 
 Подробнее [тут](https://symfony.com.ua/doc/current/controller.html)
 
+### Аунтификация через провайдер Bitrix
+Определена в файле symfony/src/Security/BitrixAuthenticator.php (по логину (`$USER->GetLogin()`)) 
+
+Проверку прав доступа можно использовать через `@IsGranted("ROLE_ADMIN")`. Пример в контроллере `symfony/src/Controller/PingController.php`.
+
+### Миграции Symfony
+В настройках Doctrine `symfony/config/packages/doctrine.yaml` включен фильтр `schema_filter: ~^(?!b\_)~` дабы избежать удаления таблиц битрикса при создании миграции symfony.
+
+#### Импорт таблиц битрикса в сущность Doctrine.
+Импорт, создает класс/сущность на осове таблицы из БД.
+
+Перед импортом, добавить (на время) в исключения нужную таблицу, например **b_iblock_element**. `schema_filter: ~^((?!b\_)|b_iblock_element)~`
+
+и выполнить команду:
+`php bin/console doctrine:mapping:import "App\Entity" annotation --path="symfony/src/Entity" --filter="BIblockElement"` (в фильтре используется CamelCase название таблицы). 
+
 ## Локальное развертывание (Docker)
+В данном способе отсутствует поддержка PushServer. Если она вам нужна: используйте вариант с VirtualBox.
 
 ### Unix систем
 1. Скопировать файл .env.example -> .env
 2. Предварительно установить пакеты: wget, zip, unzip
 3. Запустить команду в терминале: bash ./deploy_docker.sh
-4. Ввести пароль к архиву (core.zip, dump.zip)
+4. ~~Ввести пароль к архиву (core.zip, dump.zip)~~
 5. Ждем скачивания и распаковки
 
 ### Windows
@@ -203,7 +220,7 @@ REDIS_PASSWORD=secret
 12. Зайти в директорию `cd /home/bitrix/`
 13. Зайти от пользвателя bitrix `su bitrix` (это надо будет делать каждый раз перед запуском команд npm, composer, php bin/console, php bin/migrate)
 14. Скопировать файл `cp .env.example .env` (и прописать [настройки БД](#настройка-бд) `vim .env`)
-15. Запустить установщик `bash ./deploy_vbox.sh`. Он скачает дистрибутив bitrix24. В процессе установки будет запрашивать пароль (два раза: 1. core.zip; 2. dump.zip.)
+15. Запустить установщик `bash ./deploy_vbox.sh`. Он скачает дистрибутив bitrix24. ~~В процессе установки будет запрашивать пароль (два раза: 1. core.zip; 2. dump.zip.)~~
 16. Генерируем секретные ключи для symfony: устанавливаем `yum install php-sodium` и `php bin/console secrets:generate-keys`
 17. Скачать файл urlrewrite.php из development сервера и добавить в www/urlrewrite.php.
 

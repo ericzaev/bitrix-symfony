@@ -1,0 +1,44 @@
+<ruleset>
+    <arg name="encoding" value="utf-8"/>
+    <arg name="extensions" value="php"/>
+
+    <rule ref="PSR2">
+        <include-pattern>*/symfony/src/*</include-pattern>
+        <include-pattern>*/www/local/php_interface/*</include-pattern>
+    </rule>
+
+    <rule ref="Squiz.Commenting.FunctionCommentThrowTag">
+        <include-pattern>*/symfony/src/*</include-pattern>
+        <include-pattern>*/www/local/php_interface/*</include-pattern>
+    </rule>
+
+    <rule ref="Squiz.Commenting.ClassComment">
+        <exclude name="Squiz.Commenting.ClassComment.TagNotAllowed"/>
+        <include-pattern>*/symfony/src/*</include-pattern>
+        <include-pattern>*/www/local/php_interface/*</include-pattern>
+    </rule>
+
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="140"/>
+            <property name="absoluteLineLimit" value="200"/>
+        </properties>
+        <include-pattern>*/symfony/src/*</include-pattern>
+        <include-pattern>*/www/local/php_interface/*</include-pattern>
+    </rule>
+
+    <rule ref="Generic.PHP.ForbiddenFunctions">
+        <properties>
+            <property name="error" value="false"/>
+            <property name="forbiddenFunctions" type="array"
+                      value="sizeof=>count,delete=>unset,d=>null,var_dump=>null"/>
+        </properties>
+        <include-pattern>*/symfony/src/*</include-pattern>
+        <include-pattern>*/www/local/php_interface/*</include-pattern>
+    </rule>
+
+    <rule ref="Squiz.Strings.DoubleQuoteUsage.NotRequired">
+        <include-pattern>*/symfony/src/*</include-pattern>
+        <include-pattern>*/www/local/php_interface/*</include-pattern>
+    </rule>
+</ruleset>

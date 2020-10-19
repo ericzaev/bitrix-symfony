@@ -45,7 +45,7 @@ dump.zip
 !/docker-compose.yml
 !/Jenkinsfile
 !/package.json
-!/phpcs.xml
+!/.phpcs.xml
 !/phpunit.xml
 !/.eslintrc.js
 !/.eslintignore
@@ -55,9 +55,24 @@ dump.zip
 !.gitkeep
 !.gitignore
 
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/./symfony/config/secrets/prod/prod.decrypt.private.php
+/./www/local/api/symfony/bundles/
+/./symfony/var/
+/vendor/
+###< symfony/framework-bundle ###
+
 ###> symfony/webpack-encore-bundle ###
 /node_modules/
 /./www/local/api/symfony/build/
 npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###
+
+###> squizlabs/php_codesniffer ###
+/.phpcs-cache
+/phpcs.xml
+###< squizlabs/php_codesniffer ###

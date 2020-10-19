@@ -70,13 +70,13 @@ echo service('twig')->render('default/new.html.twig', array(
 
 ### Доступ к ИБ через Doctrine
 ```
-$query = instance('doctrine')->getManager()
+$query = service('doctrine')->getManager()
 	->createQuery("SELECT e FROM App:Iblock\Element e JOIN e.properties p JOIN p.iblockProperty ip WHERE ip.code = 'PHONE' AND p.value = '556677'");
 ```
 
 Или в режиме QueryBuilder
 ```
-$mg = instance('doctrine')->getManager();
+$mg = service('doctrine')->getManager();
 
 $qb = $mg->createQueryBuilder()->select('a')->from('App:Iblock\Element', 'a');
 

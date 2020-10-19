@@ -1,7 +1,6 @@
 <?php
 
 use App\Kernel;
-use chillerlan\QRCode\{QRCode, QROptions};
 use Bitrix\Highloadblock\HighloadBlockTable;
 
 /**

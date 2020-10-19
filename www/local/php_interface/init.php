@@ -1,6 +1,5 @@
 <?php
 
-use Bitrix\Main\Loader;
 use Symfony\Component\Dotenv\Dotenv;
 
 $root_path = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '/home/bitrix/www', '/');

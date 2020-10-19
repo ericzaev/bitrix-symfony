@@ -203,7 +203,7 @@ REDIS_PASSWORD=secret
 12. Зайти в директорию `cd /home/bitrix/`
 13. Зайти от пользвателя bitrix `su bitrix` (это надо будет делать каждый раз перед запуском команд npm, composer, php bin/console, php bin/migrate)
 14. Скопировать файл `cp .env.example .env` (и прописать [настройки БД](#настройка-бд) `vim .env`)
-15. Запустить установщик `bash ./deploy_vbox.sh`. Он скачает дистрибутив bitrix24. В процессе установки будет запрашивать пароль (два раза: 1. core.zip; 2. dump.zip.) - для получения пароля писать мне в лс.
+15. Запустить установщик `bash ./deploy_vbox.sh`. Он скачает дистрибутив bitrix24. В процессе установки будет запрашивать пароль (два раза: 1. core.zip; 2. dump.zip.)
 16. Генерируем секретные ключи для symfony: устанавливаем `yum install php-sodium` и `php bin/console secrets:generate-keys`
 17. Скачать файл urlrewrite.php из development сервера и добавить в www/urlrewrite.php.
 

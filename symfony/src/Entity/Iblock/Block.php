@@ -10,7 +10,6 @@ use App\Repository\Iblock\BlockRepository;
 
 /**
  * @ORM\Table(name="b_iblock", uniqueConstraints={@ORM\UniqueConstraint(name="ix_iblock_api_code", columns={"API_CODE"})}, indexes={@ORM\Index(name="ix_iblock", columns={"IBLOCK_TYPE_ID", "LID", "ACTIVE"})})
- * @ORM\Entity
  * @ORM\Entity(repositoryClass=BlockRepository::class)
  */
 class Block

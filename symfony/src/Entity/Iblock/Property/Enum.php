@@ -8,7 +8,6 @@ use App\Repository\Iblock\Property\EnumRepository;
 
 /**
  * @ORM\Table(name="b_iblock_property_enum", uniqueConstraints={@ORM\UniqueConstraint(name="ux_iblock_property_enum", columns={"PROPERTY_ID", "XML_ID"})})
- * @ORM\Entity
  * @ORM\Entity(repositoryClass=EnumRepository::class)
  */
 class Enum

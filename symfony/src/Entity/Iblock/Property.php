@@ -10,7 +10,6 @@ use App\Repository\Iblock\PropertyRepository;
 
 /**
  * @ORM\Table(name="b_iblock_property", indexes={@ORM\Index(name="ix_iblock_property_1", columns={"IBLOCK_ID"}), @ORM\Index(name="ix_iblock_property_2", columns={"CODE"}), @ORM\Index(name="ix_iblock_property_3", columns={"LINK_IBLOCK_ID"})})
- * @ORM\Entity
  * @ORM\Entity(repositoryClass=PropertyRepository::class)
  */
 class Property

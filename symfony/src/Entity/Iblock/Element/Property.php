@@ -15,7 +15,6 @@ use App\Repository\Iblock\Element\PropertyRepository;
 
 /**
  * @ORM\Table(name="b_iblock_element_property", indexes={@ORM\Index(name="ix_iblock_element_property_1", columns={"IBLOCK_ELEMENT_ID", "IBLOCK_PROPERTY_ID"}), @ORM\Index(name="ix_iblock_element_property_2", columns={"IBLOCK_PROPERTY_ID"}), @ORM\Index(name="ix_iblock_element_prop_enum", columns={"VALUE_ENUM", "IBLOCK_PROPERTY_ID"}), @ORM\Index(name="ix_iblock_element_prop_num", columns={"VALUE_NUM", "IBLOCK_PROPERTY_ID"})})
- * @ORM\Entity
  * @ORM\Entity(repositoryClass=PropertyRepository::class)
  */
 class Property

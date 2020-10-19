@@ -10,7 +10,6 @@ use App\Repository\Iblock\SectionRepository;
 
 /**
  * @ORM\Table(name="b_iblock_section", indexes={@ORM\Index(name="ix_iblock_section_left_margin", columns={"IBLOCK_ID", "LEFT_MARGIN", "RIGHT_MARGIN"}), @ORM\Index(name="ix_iblock_section_code", columns={"IBLOCK_ID", "CODE"}), @ORM\Index(name="ix_iblock_section_1", columns={"IBLOCK_ID", "IBLOCK_SECTION_ID"}), @ORM\Index(name="ix_iblock_section_depth_level", columns={"IBLOCK_ID", "DEPTH_LEVEL"}), @ORM\Index(name="ix_iblock_section_right_margin", columns={"IBLOCK_ID", "RIGHT_MARGIN", "LEFT_MARGIN"})})
- * @ORM\Entity
  * @ORM\Entity(repositoryClass=SectionRepository::class)
  */
 class Section

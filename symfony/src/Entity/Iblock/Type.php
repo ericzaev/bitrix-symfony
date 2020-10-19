@@ -9,7 +9,6 @@ use App\Repository\Iblock\TypeRepository;
 
 /**
  * @ORM\Table(name="b_iblock_type")
- * @ORM\Entity
  * @ORM\Entity(repositoryClass=TypeRepository::class)
  */
 class Type

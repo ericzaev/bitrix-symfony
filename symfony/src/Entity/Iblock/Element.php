@@ -11,7 +11,6 @@ use App\Repository\Iblock\ElementRepository;
 
 /**
  * @ORM\Table(name="b_iblock_element", indexes={@ORM\Index(name="ix_iblock_element_4", columns={"IBLOCK_ID", "XML_ID", "WF_PARENT_ELEMENT_ID"}), @ORM\Index(name="ix_iblock_element_code", columns={"IBLOCK_ID", "CODE"}), @ORM\Index(name="ix_iblock_element_1", columns={"IBLOCK_ID", "IBLOCK_SECTION_ID"}), @ORM\Index(name="ix_iblock_element_3", columns={"WF_PARENT_ELEMENT_ID"})})
- * @ORM\Entity
  * @ORM\Entity(repositoryClass=ElementRepository::class)
  */
 class Element

@@ -6,11 +6,6 @@ restore.php
 urlrewrite.php
 bitrixsetup.php
 
-
-/pma
-/_pmsa
-
 /test/
 /files/
 /images/
-/upload/

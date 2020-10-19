@@ -54,7 +54,6 @@ dump.zip
 
 !.gitkeep
 !.gitignore
-!bizproc.log
 
 ###> symfony/webpack-encore-bundle ###
 /node_modules/

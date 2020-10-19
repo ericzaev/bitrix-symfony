@@ -121,27 +121,38 @@ foreach ($qb->getQuery()->getResult() as $element) {
 Подробнее об этом режиме [тут](https://www.doctrine-project.org/projects/doctrine-orm/en/latest/reference/query-builder.html)
 
 ### Контроллеры
-Они доступны по адресу localhost/api/v2. Поумолчанию прописал в www/.htaccess `RewriteRule ^(api/v2|_profiler) /local/api/symfony/index.php [L]`
+Они доступны по адресу localhost/api/v2. Пути прописаны в www/.htaccess `RewriteRule ^(api/v2|_profiler) /local/api/symfony/index.php [L]`
 
 Создание контроллеров происходит через `php bin/console make:controller`
 
 Подробнее [тут](https://symfony.com.ua/doc/current/controller.html)
 
 ### Аунтификация через провайдер Bitrix
-Определена в файле symfony/src/Security/BitrixAuthenticator.php (по логину (`$USER->GetLogin()`)) 
+Определена в файле symfony/src/Security/BitrixAuthenticator.php (по логину `$USER->GetLogin()`) 
 
-Проверку прав доступа можно использовать через `@IsGranted("ROLE_ADMIN")`. Пример в контроллере `symfony/src/Controller/PingController.php`.
+Проверку прав доступа можно использовать через `@IsGranted("ROLE_ADMIN")`. 
+Пример в контроллере `symfony/src/Controller/PingController.php`.
 
 ### Миграции Symfony
-В настройках Doctrine `symfony/config/packages/doctrine.yaml` включен фильтр `schema_filter: ~^(?!b\_)~` дабы избежать удаления таблиц битрикса при создании миграции symfony.
+В настройках Doctrine `symfony/config/packages/doctrine.yaml` включен фильтр `schema_filter: ~^(?!b\_)~` 
+дабы избежать удаления таблиц битрикса при создании миграции symfony.
 
 #### Импорт таблиц битрикса в сущность Doctrine.
-Импорт, создает класс/сущность на осове таблицы из БД.
+Импорт - создает класс/сущность на осове таблицы из БД.
 
-Перед импортом, добавить (на время) в исключения нужную таблицу, например **b_iblock_element**. `schema_filter: ~^((?!b\_)|b_iblock_element)~`
+Перед импортом, добавить (на время) в исключения нужную таблицу, например **b_iblock_element**. 
+`schema_filter: ~^((?!b\_)|b_iblock_element$)~` и выполнить команду:
+`php bin/console doctrine:mapping:import "App\Entity" annotation --path="symfony/src/Entity" --filter="BIblockElement"` 
+(в фильтре используется CamelCase название таблицы). 
 
-и выполнить команду:
-`php bin/console doctrine:mapping:import "App\Entity" annotation --path="symfony/src/Entity" --filter="BIblockElement"` (в фильтре используется CamelCase название таблицы). 
+Импортирует только в свойства/аттрибуты класса, без геттеров/сеттеров и репозитория.
+Для генерации используйте: 
+1. Дописать аннотацию (src/Entity/BIblockElement.php)  `@ORM\Entity(repositoryClass="App\Repository\BIblockElementRepository")`
+2. Выполнить команду `php bin/console make:entity --regenerate BIblockElement`
+3. Смотрим результат
+4. В классе переписать аннотацию `@ORM\Entity(repositoryClass=BIblockElementRepository::class)`
+
+Не забудьте убрать таблицу из schema_filter.
 
 ## Локальное развертывание (Docker)
 В данном способе отсутствует поддержка PushServer. Если она вам нужна: используйте вариант с VirtualBox.

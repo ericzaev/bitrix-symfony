@@ -248,7 +248,7 @@ MYSQL_ROOT_PASSWORD=secret
 
 ### Запуск
 ###### Сборка
-`npm run build` результат `www/assets/public`. Все файлы из директории public подключаются автоматически.
+`npm run build` результат `www/assets/public`. 
 ###### dev-server (hot-reload)
 `npm run dev-server` проксируется через 127.0.0.1 (битрикс). Автоматическое обновление кода и шаблона но без стилей.
 > Encore does support HMR for Vue.js, but does not work for styles anywhere at this time.

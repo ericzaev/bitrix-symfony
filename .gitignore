@@ -45,6 +45,7 @@ dump.zip
 !/docker-compose.yml
 !/Jenkinsfile
 !/package.json
+!/package-lock.json
 !/.phpcs.xml
 !/phpunit.xml
 !/.eslintrc.js

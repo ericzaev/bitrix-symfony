@@ -1,0 +1,7 @@
+
+###> symfony/framework-bundle ###
+*
+!/console
+!/migrate
+!/.gitignore
+###< symfony/framework-bundle ###

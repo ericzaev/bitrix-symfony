@@ -1,0 +1,15 @@
+.htaccess.restore
+readme.*
+install.config
+license.*
+restore.php
+urlrewrite.php
+bitrixsetup.php
+
+
+/pma
+/_pmsa
+
+/test/
+/files/
+/images/

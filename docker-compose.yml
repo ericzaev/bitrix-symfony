@@ -1,0 +1,95 @@
+version: '2'
+
+services:
+  php:
+    build: ./docker/php
+    container_name: bsymfony_php
+    volumes:
+      - ./:/home/bitrix:cached
+      - ./logs/php:/var/log/php
+    expose:
+      - "9000"
+    extra_hosts:
+      - "localhost:10.100.0.2"
+    links:
+      - percona
+      - memcached
+    environment:
+      - PHP_IDE_CONFIG=serverName=bsymfony
+    networks:
+      bitrix:
+        ipv4_address: 10.100.0.6
+  nginx:
+    build: ./docker/nginx
+    container_name: bsymfony_nginx
+    volumes:
+      - ./:/home/bitrix:cached
+      - ./logs/nginx:/var/log/nginx
+    ports:
+      - '${INTERFACE}:80:80'
+      - '${INTERFACE}:443:443'
+    links:
+      - php
+    networks:
+      bitrix:
+        ipv4_address: 10.100.0.2
+  percona:
+    build: ./docker/percona
+    container_name: bsymfony_percona
+    volumes:
+      - ./logs/mysql:/var/log/mysql
+      - ./data/mysql:/var/lib/mysql
+    ports:
+      - '${INTERFACE}:3306:3306'
+    networks:
+      bitrix:
+        ipv4_address: 10.100.0.3
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    command: --ignore-db-dir=lost+found --innodb-use-native-aio=0
+  redis:
+    build: ./docker/redis
+    volumes:
+      - ./data/redis:/data
+    ports:
+      - "${REDIS_PORT}:6379"
+    restart: always
+    networks:
+      bitrix:
+        ipv4_address: 10.100.0.7
+  redis-webui:
+    image: erikdubbelboer/phpredisadmin
+    environment:
+      - ADMIN_USER=${REDIS_WEBUI_USERNAME}
+      - ADMIN_PASS=${REDIS_WEBUI_PASSWORD}
+      - REDIS_1_HOST=${REDIS_WEBUI_CONNECT_HOST}
+      - REDIS_1_PORT=${REDIS_WEBUI_CONNECT_PORT}
+      - REDIS_1_AUTH=${REDIS_PASSWORD}
+    ports:
+      - "${REDIS_WEBUI_PORT}:80"
+    restart: always
+    depends_on:
+      - redis
+    networks:
+      bitrix:
+        ipv4_address: 10.100.0.8
+  memcached:
+    image: memcached:latest
+    container_name: bsymfony_memcached
+    volumes:
+      - ./logs/memcached:/var/log/memcached
+    ports:
+      - '${INTERFACE}:11211:11211'
+    networks:
+      bitrix:
+        ipv4_address: 10.100.0.5
+networks:
+  bitrix:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.100.0.0/24

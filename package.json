@@ -1,0 +1,34 @@
+{
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.20.0",
+    "bootstrap": "^4.5.2",
+    "bootstrap-vue": "^2.17.3",
+    "eslint": "^5.1.0",
+    "jquery": "^1.9.1",
+    "lodash": "^4.17.20",
+    "moment": "^2.29.1",
+    "vue": "^2.6.12"
+  },
+  "devDependencies": {
+    "@symfony/webpack-encore": "^0.30.0",
+    "babel-eslint": "^10.1.0",
+    "core-js": "^3.0.0",
+    "eslint-loader": "^3.0.4",
+    "eslint-plugin-vue": "^7.0.1",
+    "node-sass": "^4.14.1",
+    "regenerator-runtime": "^0.13.2",
+    "sass-loader": "^8.0.2",
+    "vue-eslint-parser": "^7.1.0",
+    "vue-loader": "^15.9.3",
+    "vue-template-compiler": "^2.6.12",
+    "webpack-notifier": "^1.6.0"
+  },
+  "scripts": {
+    "dev-server": "./node_modules/@symfony/webpack-encore/bin/encore.js dev-server",
+    "dev": "./node_modules/@symfony/webpack-encore/bin/encore.js dev",
+    "watch": "./node_modules/@symfony/webpack-encore/bin/encore.js dev --watch",
+    "build": "./node_modules/@symfony/webpack-encore/bin/encore.js production --progress"
+  }
+}

@@ -1,0 +1,13 @@
+<phpunit bootstrap="tests/PHPUnit/bootstrap.php" colors="true">
+    <testsuites>
+		<testsuite name="classes">
+            <directory>tests/PHPUnit/classes</directory>
+        </testsuite>
+		<testsuite name="functions">
+            <directory>tests/PHPUnit/functions</directory>
+        </testsuite>
+		<testsuite name="rest">
+            <directory>tests/PHPUnit/rest</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

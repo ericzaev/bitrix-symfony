@@ -33,6 +33,7 @@ dump.zip
 !/scripts
 !/symfony
 !/.babelrc
+!/README.md
 !/.env.example
 !/.eslintrc
 !/.gitattributes

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -453,11 +454,7 @@ class User implements UserInterface
     private $blocked = 'N';
 
     /**
-     * @ORM\ManyToMany(targetEntity=Group::class, inversedBy="users")
-     * @ORM\JoinTable(name="b_user_group",
-     *   joinColumns={@ORM\JoinColumn(name="USER_ID", referencedColumnName="ID")},
-     *   inverseJoinColumns={@ORM\JoinColumn(name="GROUP_ID", referencedColumnName="ID", unique=true)}
-     * )
+     * @ORM\OneToMany(targetEntity=User\Group::class, cascade={"persist"}, mappedBy="user", orphanRemoval=true)
      */
     private $groups;
 
@@ -485,8 +482,11 @@ class User implements UserInterface
     {
         $roles = [];
 
-        foreach ($this->getGroups() as $group) {
-            $roles[] = $group->getStringId();
+        /** @var User\Group $relation */
+        foreach ($this->getGroups() as $relation) {
+            if ($relation->isActive()) {
+                $roles[] = $relation->getGroup()->getStringId();
+            }
         }
 
         return array_unique($roles);
@@ -507,7 +507,7 @@ class User implements UserInterface
      */
     public function getUsername()
     {
-       return $this->getLogin();
+        return $this->getLogin();
     }
 
     /**
@@ -1268,10 +1268,19 @@ class User implements UserInterface
         return $this->groups;
     }
 
-    public function addGroup(Group $group): self
+    public function addGroup(Group $group, ?\DateTimeInterface $from = null, ?\DateTimeInterface $to = null): self
     {
-        if (!$this->groups->contains($group)) {
-            $this->groups[] = $group;
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->eq('groupId', $group->getId()));
+
+        if (count($this->groups->matching($criteria)) < 1) {
+            $relation = (new User\Group())
+                ->setGroup($group)
+                ->setUser($this)
+                ->setDateActiveFrom($from)
+                ->setDateActiveTo($to);
+
+            $this->groups[] = $relation;
         }
 
         return $this;
@@ -1279,8 +1288,16 @@ class User implements UserInterface
 
     public function removeGroup(Group $group): self
     {
-        if ($this->groups->contains($group)) {
-            $this->groups->removeElement($group);
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->eq('groupId', $group->getId()));
+
+        /** @var User\Group $relation */
+        if ($relation = $this->groups->matching($criteria)->first()) {
+            $this->groups->removeElement($relation);
+            // set the owning side to null (unless already changed)
+            if ($relation->getUser() === $this) {
+                $relation->setUser(null);
+            }
         }
 
         return $this;

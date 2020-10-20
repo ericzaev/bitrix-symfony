@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\GroupRepository;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Table(name="b_group")
@@ -86,7 +87,7 @@ class Group
     private $stringId;
 
     /**
-     * @ORM\ManyToMany(targetEntity=User::class, mappedBy="groups")
+     * @ORM\OneToMany(targetEntity=User\Group::class, cascade={"persist"}, mappedBy="group", orphanRemoval=true)
      */
     private $users;
 
@@ -215,26 +216,4 @@ class Group
     {
         return $this->users;
     }
-
-    public function addUser(User $user): self
-    {
-        if (!$this->users->contains($user)) {
-            $this->users[] = $user;
-            $user->addGroup($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUser(User $user): self
-    {
-        if ($this->users->contains($user)) {
-            $this->users->removeElement($user);
-            $user->removeGroup($this);
-        }
-
-        return $this;
-    }
-
-
 }

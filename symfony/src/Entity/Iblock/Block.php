@@ -3,10 +3,11 @@
 namespace App\Entity\Iblock;
 
 use App\Entity\Group;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\Iblock\BlockRepository;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Table(name="b_iblock", uniqueConstraints={@ORM\UniqueConstraint(name="ix_iblock_api_code", columns={"API_CODE"})}, indexes={@ORM\Index(name="ix_iblock", columns={"IBLOCK_TYPE_ID", "LID", "ACTIVE"})})
@@ -311,9 +312,15 @@ class Block
     private $elementName;
 
     /**
-     * @ORM\OneToMany(targetEntity=Property::class, mappedBy="block", orphanRemoval=true)
+     * @ORM\ManyToOne(targetEntity=Type::class, inversedBy="blocks")
+     * @ORM\JoinColumn(name="IBLOCK_TYPE_ID", referencedColumnName="ID")
      */
-    private $properties;
+    private $type;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Block\Group::class, cascade={"persist"}, mappedBy="block", orphanRemoval=true)
+     */
+    private $groups;
 
     /**
      * @ORM\OneToMany(targetEntity=Element::class, mappedBy="block", orphanRemoval=true)
@@ -321,19 +328,9 @@ class Block
     private $elements;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Type::class, inversedBy="blocks")
-     * @ORM\JoinColumn(name="IBLOCK_TYPE_ID", referencedColumnName="ID")
+     * @ORM\OneToMany(targetEntity=Property::class, mappedBy="block", orphanRemoval=true)
      */
-    private $type;
-
-    /**
-     * @ORM\ManyToMany(targetEntity=Group::class)
-     * @ORM\JoinTable(name="b_iblock_group",
-     *   joinColumns={@ORM\JoinColumn(name="IBLOCK_ID", referencedColumnName="ID")},
-     *   inverseJoinColumns={@ORM\JoinColumn(name="GROUP_ID", referencedColumnName="ID", unique=true)}
-     * )
-     */
-    private $groups;
+    private $properties;
 
     public function __construct()
     {
@@ -839,31 +836,54 @@ class Block
         return $this;
     }
 
-    /**
-     * @return Collection|Property[]
-     */
-    public function getProperties(): Collection
+    public function getType(): ?Type
     {
-        return $this->properties;
+        return $this->type;
     }
 
-    public function addProperty(Property $property): self
+    public function setType(?Type $type): self
     {
-        if (!$this->properties->contains($property)) {
-            $this->properties[] = $property;
-            $property->setBlock($this);
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Block\Group[]
+     */
+    public function getGroups(): Collection
+    {
+        return $this->groups;
+    }
+
+    public function addGroup(Group $group, string $permission): self
+    {
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->eq('groupId', $group->getId()));
+
+        if (count($this->groups->matching($criteria)) < 1) {
+            $relation = (new Block\Group())
+                ->setGroup($group)
+                ->setBlock($this)
+                ->setPermission($permission);
+
+            $this->groups[] = $relation;
         }
 
         return $this;
     }
 
-    public function removeProperty(Property $property): self
+    public function removeGroup(Group $group): self
     {
-        if ($this->properties->contains($property)) {
-            $this->properties->removeElement($property);
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->eq('groupId', $group->getId()));
+
+        /** @var Block\Group $relation */
+        if ($relation = $this->groups->matching($criteria)->first()) {
+            $this->groups->removeElement($relation);
             // set the owning side to null (unless already changed)
-            if ($property->getBlock() === $this) {
-                $property->setBlock(null);
+            if ($relation->getBlock() === $this) {
+                $relation->setBlock(null);
             }
         }
 
@@ -901,39 +921,32 @@ class Block
         return $this;
     }
 
-    public function getType(): ?Type
-    {
-        return $this->type;
-    }
-
-    public function setType(?Type $type): self
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
     /**
-     * @return Collection|Group[]
+     * @return Collection|Property[]
      */
-    public function getGroups(): Collection
+    public function getProperties(): Collection
     {
-        return $this->groups;
+        return $this->properties;
     }
 
-    public function addGroup(Group $group): self
+    public function addProperty(Property $property): self
     {
-        if (!$this->groups->contains($group)) {
-            $this->groups[] = $group;
+        if (!$this->properties->contains($property)) {
+            $this->properties[] = $property;
+            $property->setBlock($this);
         }
 
         return $this;
     }
 
-    public function removeGroup(Group $group): self
+    public function removeProperty(Property $property): self
     {
-        if ($this->groups->contains($group)) {
-            $this->groups->removeElement($group);
+        if ($this->properties->contains($property)) {
+            $this->properties->removeElement($property);
+            // set the owning side to null (unless already changed)
+            if ($property->getBlock() === $this) {
+                $property->setBlock(null);
+            }
         }
 
         return $this;

@@ -235,24 +235,24 @@ class Element
     private $showCounterStart;
 
     /**
-     * @ORM\OneToMany(targetEntity=Property::class, mappedBy="iblockElement", orphanRemoval=true)
-     */
-    private $properties;
-
-    /**
      * @ORM\ManyToOne(targetEntity=Block::class, inversedBy="elements")
      * @ORM\JoinColumn(name="IBLOCK_ID", referencedColumnName="ID")
      */
     private $block;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Section::class, inversedBy="elements")
+     * @ORM\ManyToMany(targetEntity=Section::class, cascade={"persist"}, inversedBy="elements")
      * @ORM\JoinTable(name="b_iblock_section_element",
      *   joinColumns={@ORM\JoinColumn(name="IBLOCK_ELEMENT_ID", referencedColumnName="ID")},
      *   inverseJoinColumns={@ORM\JoinColumn(name="IBLOCK_SECTION_ID", referencedColumnName="ID", unique=true)}
      * )
      */
     private $sections;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Property::class, mappedBy="iblockElement", orphanRemoval=true)
+     */
+    private $properties;
 
     /**
      * @ORM\ManyToOne(targetEntity=File::class)
@@ -268,8 +268,8 @@ class Element
 
     public function __construct()
     {
-        $this->properties = new ArrayCollection();
         $this->sections = new ArrayCollection();
+        $this->properties = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -637,37 +637,6 @@ class Element
         return $this;
     }
 
-    /**
-     * @return Collection|Property[]
-     */
-    public function getProperties(): Collection
-    {
-        return $this->properties;
-    }
-
-    public function addProperty(Property $property): self
-    {
-        if (!$this->properties->contains($property)) {
-            $this->properties[] = $property;
-            $property->setElement($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProperty(Property $property): self
-    {
-        if ($this->properties->contains($property)) {
-            $this->properties->removeElement($property);
-            // set the owning side to null (unless already changed)
-            if ($property->getElement() === $this) {
-                $property->setElement(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getBlock(): ?Block
     {
         return $this->block;
@@ -730,5 +699,34 @@ class Element
         return $this;
     }
 
+    /**
+     * @return Collection|Property[]
+     */
+    public function getProperties(): Collection
+    {
+        return $this->properties;
+    }
 
+    public function addProperty(Property $property): self
+    {
+        if (!$this->properties->contains($property)) {
+            $this->properties[] = $property;
+            $property->setElement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProperty(Property $property): self
+    {
+        if ($this->properties->contains($property)) {
+            $this->properties->removeElement($property);
+            // set the owning side to null (unless already changed)
+            if ($property->getElement() === $this) {
+                $property->setElement(null);
+            }
+        }
+
+        return $this;
+    }
 }

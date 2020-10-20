@@ -171,15 +171,19 @@ class Section
     private $socnetGroupId;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Element::class, mappedBy="sections")
-     */
-    private $elements;
-
-    /**
      * @ORM\ManyToOne(targetEntity=File::class)
      * @ORM\JoinColumn(name="PICTURE", referencedColumnName="ID")
      */
     private $picture;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Element::class, cascade={"persist"}, mappedBy="sections")
+     * @ORM\JoinTable(name="b_iblock_section_element",
+     *   joinColumns={@ORM\JoinColumn(name="IBLOCK_SECTION_ID", referencedColumnName="ID")},
+     *   inverseJoinColumns={@ORM\JoinColumn(name="IBLOCK_ELEMENT_ID", referencedColumnName="ID", unique=true)}
+     * )
+     */
+    private $elements;
 
     public function __construct()
     {
@@ -443,6 +447,18 @@ class Section
         return $this;
     }
 
+    public function getPicture(): ?File
+    {
+        return $this->picture;
+    }
+
+    public function setPicture(?File $picture): self
+    {
+        $this->picture = $picture;
+
+        return $this;
+    }
+
     /**
      * @return Collection|Element[]
      */
@@ -467,18 +483,6 @@ class Section
             $this->elements->removeElement($element);
             $element->removeSection($this);
         }
-
-        return $this;
-    }
-
-    public function getPicture(): ?File
-    {
-        return $this->picture;
-    }
-
-    public function setPicture(?File $picture): self
-    {
-        $this->picture = $picture;
 
         return $this;
     }

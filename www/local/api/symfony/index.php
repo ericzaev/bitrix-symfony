@@ -13,7 +13,7 @@ require_once(sprintf('%s/bitrix/modules/main/include/prolog_before.php', $root))
 if ($_SERVER['APP_DEBUG']) {
     umask(0000);
 
-    // Debug::enable();
+    Debug::enable();
 }
 
 if (!isset($_SERVER['HTTP_REFERER'])) {

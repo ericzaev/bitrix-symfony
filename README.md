@@ -37,10 +37,16 @@ foreach ($query->getResult() as $news) {
 
 Шаблонизатор twig
 ```
-echo service('twig')->render('test.html.twig', ['user' => \Local\Main\User::getInstanceCurrent()]);
+echo service('twig')->render('test.html.twig');
 
 {# templates/test.html.twig #}
-<h1>{{ user.getLogin }}</h1>
+{% if is_granted('ROLE_SUPPORT') %}
+    you support user
+{% endif %}
+
+{% if is_granted('ROLE_ADMIN') %}
+    you admin user
+{% endif %}
 ```
 
 Сервис форм

@@ -1,1 +1,7 @@
-<h1>{{ user.getLogin }}</h1>
+{% if is_granted('ROLE_SUPPORT') %}
+    you support user
+{% endif %}
+
+{% if is_granted('ROLE_ADMIN') %}
+    you admin user
+{% endif %}

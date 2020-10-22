@@ -2,6 +2,7 @@
 
 use App\Kernel;
 use Bitrix\Highloadblock\HighloadBlockTable;
+use App\Security\BitrixDirectlyAuthenticator;
 
 /**
  * @param string $key
@@ -63,10 +64,13 @@ function symfony(bool $boot = true): ?Kernel
 
     if (!$symfony) {
         $symfony = new Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG']);
-    }
 
-    if ($boot) {
-        $symfony->boot();
+        if ($boot) {
+            $symfony->boot();
+
+            // todo: другой способ аутентификации (без HTTP) мне неизвестен
+            instance(BitrixDirectlyAuthenticator::class)->authenticate();
+        }
     }
 
     return $symfony;

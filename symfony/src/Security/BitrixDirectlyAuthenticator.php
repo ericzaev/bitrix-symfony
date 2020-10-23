@@ -3,7 +3,9 @@
 namespace App\Security;
 
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
@@ -12,6 +14,10 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  */
 class BitrixDirectlyAuthenticator
 {
+    /**
+     * @var AuthenticationManagerInterface
+     */
+    protected $manager;
 
     /**
      * @var TokenStorageInterface
@@ -27,9 +33,11 @@ class BitrixDirectlyAuthenticator
      * BitrixDirectlyAuthenticator constructor.
      * @param UserProviderInterface $provider
      * @param TokenStorageInterface $storage
+     * @param AuthenticationManagerInterface $manager
      */
-    public function __construct(UserProviderInterface $provider, TokenStorageInterface $storage)
+    public function __construct(UserProviderInterface $provider, TokenStorageInterface $storage, AuthenticationManagerInterface $manager)
     {
+        $this->manager = $manager;
         $this->storage = $storage;
         $this->provider = $provider;
     }
@@ -47,6 +55,8 @@ class BitrixDirectlyAuthenticator
 
                 return true;
             }
+        } else {
+            $this->storage->setToken(new AnonymousToken('default', 'anon.', []));
         }
 
         return false;

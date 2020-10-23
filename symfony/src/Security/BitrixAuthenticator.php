@@ -15,7 +15,7 @@ class BitrixAuthenticator extends AbstractGuardAuthenticator
 {
     public function supports(Request $request)
     {
-        return true;
+        return false;
     }
 
     public function getCredentials(Request $request)

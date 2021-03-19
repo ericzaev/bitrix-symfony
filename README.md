@@ -264,7 +264,14 @@ MYSQL_USER=bitrix
 MYSQL_PASSWORD=secret
 MYSQL_ROOT_PASSWORD=secret
 ```
-
+### bitrix/composer.json
+Добавить в /bitrix/.settings.php
+```
+'composer' => [
+  'value' => ['config_path' => '/home/bitrix/composer.json']
+],
+```
+[Документация](https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&LESSON_ID=4637&LESSON_PATH=3913.3516.4776.2483.4637)
 ### Убираем шаблон 404
 Из-за отсутствия файлов в директории /upload/, битрикс подставляет шаблон "Карта Сайта" на каждый запрос, что увеличивает нагрузку.
 
